@@ -39,7 +39,7 @@ if ingredients_list:
     for data in my_fruit_data:
         # Check if the API returned an error message for a specific fruit
         # The 'error' key only exists if there was a problem
-        if "error" in data:
+        if isinstance(data, dict) and 'error' in data:
             st.subheader("Nutrition Information")
             st.write(data['error'])
         else:
