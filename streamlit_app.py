@@ -23,6 +23,20 @@ ingredients_list = st.multiselect(
     , max_selections=5
 )
 
+if ingredients_list:
+    my_fruit_data = []
+    for fruit_chosen in ingredients_list:
+        smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}")
+        my_fruit_data.append(smoothiefroot_response.json())
+    for data in my_fruit_data:
+        if "error" in data:
+            st.subheader("Nutrition Information")
+            st.write(data['error'])
+        else:
+            fruit_name = data[0]['name']
+            st.subheader(f"{fruit_name} Nutrition Information")
+            st.dataframe(data=data, use_container_width=True)
+
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order')
 
