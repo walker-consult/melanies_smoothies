@@ -23,16 +23,27 @@ ingredients_list = st.multiselect(
     , max_selections=5
 )
 
+# This section now correctly handles the API calls and display.
 if ingredients_list:
-    my_fruit_data = []
+    my_fruit_data = [] # A list to store the API responses
+    
+    # 1. Loop through the ingredients to make API calls and collect data
     for fruit_chosen in ingredients_list:
+        # The API call is now dynamic, using the selected fruit
         smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}")
+        
+        # We need to get the JSON data from the response
         my_fruit_data.append(smoothiefroot_response.json())
+        
+    # 2. After the loop, display the collected data
     for data in my_fruit_data:
+        # Check if the API returned an error message for a specific fruit
+        # The 'error' key only exists if there was a problem
         if "error" in data:
             st.subheader("Nutrition Information")
             st.write(data['error'])
         else:
+            # This code runs ONLY if there is no error
             fruit_name = data[0]['name']
             st.subheader(f"{fruit_name} Nutrition Information")
             st.dataframe(data=data, use_container_width=True)
@@ -61,6 +72,3 @@ if time_to_insert:
     else:
         # Show an error if a name or ingredients are missing
         st.error("Please enter a name and select some ingredients before submitting.")
-
-smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
-sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
