@@ -35,18 +35,8 @@ if ingredients_list:
         # We need to get the JSON data from the response
         my_fruit_data.append(smoothiefroot_response.json())
         
-    # 2. After the loop, display the collected data
-    for data in my_fruit_data:
-        # Check if the API returned an error message for a specific fruit
-        # The 'error' key only exists if there was a problem
-        if isinstance(data, dict) and 'error' in data:
-            st.subheader("Nutrition Information")
-            st.write(data['error'])
-        else:
-            # This code runs ONLY if there is no error
-            fruit_name = data[0]['name']
-            st.subheader(f"{fruit_name} Nutrition Information")
-            st.dataframe(data=data, use_container_width=True)
+    # 2. After the loop, display the collected data in a single dataframe
+    st.dataframe(data=my_fruit_data, use_container_width=True)
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order')
