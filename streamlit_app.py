@@ -14,37 +14,38 @@ st.write("The name on your Smoothie will be:", name_on_order)
 # Connect to Snowflake using Streamlit's secrets management
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+# Select both FRUIT_NAME and SEARCH_ON
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON')).collect()
 
 # Allow the user to select up to 5 ingredients
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
     , my_dataframe
     , max_selections=5
+    , format_func=lambda x: x['FRUIT_NAME']
 )
-
 
 # This is where the code to fetch and display the API data should be placed
 if ingredients_list:
-    ingredients_string = ''
-    for fruit_chosen in ingredients_list:
-        ingredients_string += fruit_chosen + ' '
-        
-        # The API call is now dynamic, using the fruit_chosen variable
-        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen}")
+    # Loop through the selected items from the dataframe
+    for fruit_item in ingredients_list:
+        # Get the search term from the SEARCH_ON column
+        search_term = fruit_item['SEARCH_ON']
+
+        # Now the API call is dynamic, using the value from SEARCH_ON
+        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{search_term}")
         
         # We need to handle the API response correctly
         fruit_data = fruityvice_response.json()
         
         # Check if the API response is an error message
         if isinstance(fruit_data, dict) and 'error' in fruit_data:
-            st.subheader(f"{fruit_chosen} Nutrition Information")
+            st.subheader(f"{fruit_item['FRUIT_NAME']} Nutrition Information")
             st.write(fruit_data['error'])
         else:
             # This code runs ONLY if there is no error
-            st.subheader(f"{fruit_data.get('name')} Nutrition Information")
+            st.subheader(f"{fruit_item['FRUIT_NAME']} Nutrition Information")
             st.dataframe(data=fruit_data, use_container_width=True)
-
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order', key='submit_order_button')
@@ -53,9 +54,9 @@ time_to_insert = st.button('Submit Order', key='submit_order_button')
 if time_to_insert:
     # Check if a name was entered and at least one ingredient was selected
     if name_on_order and ingredients_list:
-        # Join the list of ingredients into a single string
-        ingredients_string = ', '.join(ingredients_list)
-
+        # Now we create a list of strings from the dictionaries for concatenation
+        ingredients_string = ', '.join([item['FRUIT_NAME'] for item in ingredients_list])
+        
         # Create the SQL insert statement
         my_insert_stmt = f"""
             INSERT INTO smoothies.public.orders(ingredients, name_on_order)
@@ -64,7 +65,7 @@ if time_to_insert:
         
         # Execute the SQL statement in Snowflake
         session.sql(my_insert_stmt).collect()
-
+        
         # Show a success message to the user
         st.success(f'Your Smoothie is ordered, {name_on_order}! ✅')
     else:
