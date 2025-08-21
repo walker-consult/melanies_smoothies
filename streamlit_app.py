@@ -33,7 +33,7 @@ if ingredients_list:
 
         fruit_data = fruityvice_response.json()
             
-        st.subheader(f"fruit_data.get('name')} Nutrition Information")
+        st.subheader(f"{fruit_data.get('name')} Nutrition Information")
         st.dataframe(data=fruit_data, use_container_width=True)
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
