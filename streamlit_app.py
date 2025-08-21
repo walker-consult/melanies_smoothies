@@ -14,13 +14,17 @@ st.write("The name on your Smoothie will be:", name_on_order)
 # Connect to Snowflake using Streamlit's secrets management
 cnx = st.connection("snowflake")
 session = cnx.session()
-# Select both FRUIT_NAME and SEARCH_ON and collect the data into a list of dictionaries
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON')).collect()
+
+# Select both FRUIT_NAME and SEARCH_ON...
+my_data_rows = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON')).collect()
+# ...and explicitly convert the data into a list of Python dictionaries
+my_dataframe = [row.as_dict() for row in my_data_rows]
 
 # Let's check what the data looks like before passing it to multiselect
 st.write(my_dataframe)
 
 # Allow the user to select up to 5 ingredients
+# This part now works perfectly because my_dataframe is a standard list of dicts
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
     , my_dataframe
