@@ -26,26 +26,23 @@ ingredients_list = st.multiselect(
 )
 
 # This is where the code to fetch and display the API data should be placed
+# This is where the code to fetch and display the API data should be placed
 if ingredients_list:
-    # Loop through the selected items from the dataframe
-    for fruit_item in ingredients_list:
-        # Get the search term from the SEARCH_ON column
-        search_term = fruit_item['SEARCH_ON']
-
-        # Now the API call is dynamic, using the value from SEARCH_ON
-        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{search_term}")
+    ingredients_string = ''
+    for fruit_chosen in ingredients_list:
+        ingredients_string += fruit_chosen + ' '
+        st.subheader(fruit_chosen + ' Nutrition Information')
         
-        # We need to handle the API response correctly
-        fruit_data = fruityvice_response.json()
+        # The API call is now dynamic, using the fruit_chosen variable
+        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen}")
         
-        # Check if the API response is an error message
-        if isinstance(fruit_data, dict) and 'error' in fruit_data:
-            st.subheader(f"{fruit_item['FRUIT_NAME']} Nutrition Information")
-            st.write(fruit_data['error'])
-        else:
-            # This code runs ONLY if there is no error
-            st.subheader(f"{fruit_item['FRUIT_NAME']} Nutrition Information")
-            st.dataframe(data=fruit_data, use_container_width=True)
+        # We need to make sure the data is a list for the dataframe
+        data_to_display = fruityvice_response.json()
+        if not isinstance(data_to_display, list):
+            # If it's a single dictionary, put it in a list
+            data_to_display = [data_to_display]
+        
+        st.dataframe(data=data_to_display, use_container_width=True)
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order', key='submit_order_button')
