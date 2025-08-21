@@ -23,18 +23,28 @@ ingredients_list = st.multiselect(
     , max_selections=5
 )
 
+
+# This is where the code to fetch and display the API data should be placed
 if ingredients_list:
     ingredients_string = ''
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
-                
+        
         # The API call is now dynamic, using the fruit_chosen variable
         fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen}")
-
+        
+        # We need to handle the API response correctly
         fruit_data = fruityvice_response.json()
-            
-        st.subheader(f"{fruit_data.get('name')} Nutrition Information")
-        st.dataframe(data=fruit_data, use_container_width=True)
+        
+        # Check if the API response is an error message
+        if isinstance(fruit_data, dict) and 'error' in fruit_data:
+            st.subheader(f"{fruit_chosen} Nutrition Information")
+            st.write(fruit_data['error'])
+        else:
+            # This code runs ONLY if there is no error
+            st.subheader(f"{fruit_data.get('name')} Nutrition Information")
+            st.dataframe(data=fruit_data, use_container_width=True)
+
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order', key='submit_order_button')
