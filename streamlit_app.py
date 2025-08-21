@@ -23,23 +23,18 @@ ingredients_list = st.multiselect(
     , max_selections=5
 )
 
-# This section now correctly handles the API calls and display.
+# This is where the code to fetch and display the API data should be placed
 if ingredients_list:
-    my_fruit_data = [] # A list to store the API responses
-    
-    # 1. Loop through the ingredients to make API calls and collect data
+    ingredients_string = ''
     for fruit_chosen in ingredients_list:
-        # The API call is now dynamic, using the selected fruit
-        smoothiefroot_response = requests.get(f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen}")
-        
-        # We need to get the JSON data from the response
-        my_fruit_data.append(smoothiefroot_response.json())
-        
-    # 2. After the loop, display the collected data in a single dataframe
-    st.dataframe(data=my_fruit_data, use_container_width=True)
+        ingredients_string += fruit_chosen + ' '
+        st.subheader(fruit_chosen + ' Nutrition Information')
+        # The API call and dataframe display are now inside the loop
+        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen}")
+        sf_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
-time_to_insert = st.button('Submit Order')
+time_to_insert = st.button('Submit Order', key='submit_order_button')
 
 # Process the order if the button is clicked and all fields are valid
 if time_to_insert:
@@ -47,18 +42,18 @@ if time_to_insert:
     if name_on_order and ingredients_list:
         # Join the list of ingredients into a single string
         ingredients_string = ', '.join(ingredients_list)
-        
+
         # Create the SQL insert statement
         my_insert_stmt = f"""
             INSERT INTO smoothies.public.orders(ingredients, name_on_order)
             VALUES ('{ingredients_string}', '{name_on_order}');
-        """
+            """
         
         # Execute the SQL statement in Snowflake
         session.sql(my_insert_stmt).collect()
-        
-        # Show a success message to the user
-        st.success(f'Your Smoothie is ordered, {name_on_order}! ✅')
-    else:
-        # Show an error if a name or ingredients are missing
-        st.error("Please enter a name and select some ingredients before submitting.")
+
+    # Show a success message to the user
+    st.success(f'Your Smoothie is ordered, {name_on_order}! ✅')
+else:
+    # Show an error if a name or ingredients are missing
+    st.error("Please enter a name and select some ingredients before submitting.")
