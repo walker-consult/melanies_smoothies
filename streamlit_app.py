@@ -14,13 +14,14 @@ st.write("The name on your Smoothie will be:", name_on_order)
 # Connect to Snowflake using Streamlit's secrets management
 cnx = st.connection("snowflake")
 session = cnx.session()
-# Select both FRUIT_NAME and SEARCH_ON
+# Select both FRUIT_NAME and SEARCH_ON and collect the data into a list of dictionaries
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON')).collect()
 
 # Allow the user to select up to 5 ingredients
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
-    , my_dataframe
+    # The multiselect widget will still display FRUIT_NAME
+    , options=my_dataframe
     , max_selections=5
     , format_func=lambda x: x['FRUIT_NAME']
 )
