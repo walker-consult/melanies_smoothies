@@ -17,6 +17,9 @@ session = cnx.session()
 # Select both FRUIT_NAME and SEARCH_ON and collect the data into a list of dictionaries
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON')).collect()
 
+# Let's check what the data looks like before passing it to multiselect
+st.write(my_dataframe)
+
 # Allow the user to select up to 5 ingredients
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
