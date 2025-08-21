@@ -20,8 +20,7 @@ my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT
 # Allow the user to select up to 5 ingredients
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
-    # The multiselect widget will still display FRUIT_NAME
-    , options=my_dataframe
+    , my_dataframe
     , max_selections=5
     , format_func=lambda x: x['FRUIT_NAME']
 )
