@@ -27,18 +27,14 @@ if ingredients_list:
     ingredients_string = ''
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
-        st.subheader(fruit_chosen + ' Nutrition Information')
-        
+                
         # The API call is now dynamic, using the fruit_chosen variable
         fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen}")
-        
-        # We need to make sure the data is a list for the dataframe
-        data_to_display = fruityvice_response.json()
-        if not isinstance(data_to_display, list):
-            # If it's a single dictionary, put it in a list
-            data_to_display = [data_to_display]
-        
-        st.dataframe(data=data_to_display, use_container_width=True)
+
+        fruit_data = fruityvice_response.json()
+            
+        st.subheader(f"fruit_data.get('name')} Nutrition Information")
+        st.dataframe(data=fruit_data, use_container_width=True)
 
 # Button to submit the order. It's placed outside any 'if' block to avoid errors.
 time_to_insert = st.button('Submit Order', key='submit_order_button')
