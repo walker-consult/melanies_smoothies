@@ -23,8 +23,6 @@ my_dataframe = [row.as_dict() for row in my_data_rows]
 # Let's check what the data looks like before passing it to multiselect
 st.write(my_dataframe)
 
-st.stop()
-
 # Allow the user to select up to 5 ingredients
 # This part now works perfectly because my_dataframe is a standard list of dicts
 ingredients_list = st.multiselect(
