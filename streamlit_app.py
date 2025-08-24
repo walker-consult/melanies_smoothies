@@ -58,7 +58,7 @@ if time_to_insert:
     if name_on_order and ingredients_list:
         # Now we create a list of strings from the dictionaries for concatenation
         # This is the correct code for your lab
-        ingredients_string = ', '.join([item['FRUIT_NAME'] for item in ingredients_list])
+        ingredients_string = ','.join([item['FRUIT_NAME'] for item in ingredients_list])
         
         # Create the SQL insert statement
         my_insert_stmt = f"""
