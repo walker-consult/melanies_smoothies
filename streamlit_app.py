@@ -57,7 +57,7 @@ if time_to_insert:
     # Check if a name was entered and at least one ingredient was selected
     if name_on_order and ingredients_list:
         # Now we create a list of strings from the dictionaries for concatenation
-        ingredients_string = ', '.join([item['FRUIT_NAME'] for item in ingredients_list])
+        ingredients_string = ', '.join(sorted([item['FRUIT_NAME'] for item in ingredients_list]))
         
         # Create the SQL insert statement
         my_insert_stmt = f"""
