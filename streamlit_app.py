@@ -61,8 +61,8 @@ if time_to_insert:
         
         # Create the SQL insert statement
         my_insert_stmt = f"""
-            INSERT INTO smoothies.public.orders(ingredients, name_on_order)
-            VALUES ('{ingredients_string}', '{name_on_order}');
+            INSERT INTO smoothies.public.orders(ingredients, name_on_order, order_filled)
+            VALUES ('{ingredients_string}', '{name_on_order}', FALSE);
         """
         
         # Execute the SQL statement in Snowflake
